@@ -24,6 +24,7 @@ import {
   FlamesButtonTexts,
   FlamesResultText,
 } from "../constant";
+import myPic from "../assets/kiru.jpeg";
 import classes from "./Flames.module.css";
 
 const Flames = () => {
@@ -36,6 +37,7 @@ const Flames = () => {
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [flame, setFlame] = useState<string>("");
+  const [devil, setDevil] = useState<boolean>(false);
 
   const handleChange = (event: SelectChangeEvent) => {
     setFlame(event.target.value as string);
@@ -72,7 +74,16 @@ const Flames = () => {
   const handleCloseSnackbar = () => {
     setOpen(false);
   };
-  const handleCalculateFlames = () => {
+  const handleCalculateFlames = (set:boolean) => {
+    setDevil(set);
+    // Check for the specific name "pandikirubhakaran"
+    if (
+      username.toLowerCase().replace(/\s+/g, "") === "pandikirubhakaran" ||
+      userPartnerName.toLowerCase().replace(/\s+/g, "") === "pandikirubhakaran"
+    ) {
+      setResult("You can't find a flames with devil");
+      return; // Stop further execution
+    }
     // Check if user has provided names
     if (!username || !userPartnerName) {
       setSnackbarMessage("Kindly enter your name and your partner's name");
@@ -161,9 +172,7 @@ const Flames = () => {
             >
               <Typography color="yellow">Set Default Flames</Typography>
               <IconButton>
-                <TipsAndUpdatesIcon
-                  sx={{ color: "yellow" }}
-                />
+                <TipsAndUpdatesIcon sx={{ color: "yellow" }} />
               </IconButton>
             </Box>
             <Dialog open={openDialog} onClose={handleClose}>
@@ -248,7 +257,7 @@ const Flames = () => {
             value={userPartnerName}
             onChange={handleUserPartnerName}
           />
-          <Button className={classes.button} onClick={handleCalculateFlames}>
+          <Button className={classes.button} onClick={()=>handleCalculateFlames(true)}>
             {FlamesButtonTexts.CALCULATE}
           </Button>
           <Button className={classes.clearButton} onClick={handleClear}>
@@ -258,15 +267,45 @@ const Flames = () => {
         <LandingImage />
       </Box>
       <>
-        {result && username && userPartnerName && (
-          <Typography className={classes.resultText}>
-            {FlamesResultText.RELATIONSHIP_RESULT}{" "}
-            <span className={classes.resultHighlight}>{username}</span> and{" "}
-            <span className={classes.resultHighlight}>{userPartnerName}</span> :{" "}
-            <span style={{ color: "yellow" }}>"{result}"</span>
-          </Typography>
+        {devil && username.toLowerCase().replace(/\s+/g, "") === "pandikirubhakaran" ? (
+          <div style={{ textAlign: "center" }}>
+            <Typography color="#fff" fontSize="20px">
+              {`Ms.${userPartnerName}: `}
+              <span style={{ color: "red" }}>{result}</span>
+            </Typography>
+            <img
+              src={myPic}
+              alt="kiru"
+              style={{ marginTop: "10px", width: "100px", height: "100px" }}
+            />
+          </div>
+        ) :devil && userPartnerName.toLowerCase().replace(/\s+/g, "") ===
+          "pandikirubhakaran" ? (
+          <div style={{ textAlign: "center" }}>
+            <Typography color="#fff" fontSize="20px">
+              {`Ms.${username}: `}
+              <span style={{ color: "red" }}>{result}</span>
+            </Typography>
+            <img
+              src={myPic}
+              alt="kiru"
+              style={{ marginTop: "10px", width: "100px", height: "100px" }}
+            />
+          </div>
+        ) : (
+          result &&
+          username &&
+          userPartnerName && (
+            <Typography className={classes.resultText}>
+              {FlamesResultText.RELATIONSHIP_RESULT}{" "}
+              <span className={classes.resultHighlight}>{username}</span> and{" "}
+              <span className={classes.resultHighlight}>{userPartnerName}</span>{" "}
+              : <span style={{ color: "red" }}>"{result}"</span>
+            </Typography>
+          )
         )}
       </>
+
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={open}
